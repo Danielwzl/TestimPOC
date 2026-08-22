@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Automation Test Lab</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #1f2937;
+  }
+  header {
+    background: #111827;
+    color: white;
+    padding: 18px 24px;
+  }
+  header h1 { margin: 0 0 5px; font-size: 24px; }
+  header p { margin: 0; color: #cbd5e1; font-size: 14px; }
+
+  .container { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    border: 1px solid #d1d5db;
+    background: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .tab.active { background: #2563eb; color: white; border-color: #2563eb; }
+
+  .panel {
+    display: none;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  }
+  .panel.active { display: block; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  label { font-size: 13px; font-weight: bold; }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  textarea { min-height: 90px; resize: vertical; }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  button {
+    border: 0;
+    border-radius: 5px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .primary { background: #2563eb; color: white; }
+  .secondary { background: #e5e7eb; color: #111827; }
+  .danger { background: #dc2626; color: white; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+  .toolbar input { max-width: 300px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    padding: 12px 8px;
+  }
+  th { background: #f8fafc; }
+  .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .active-badge { background: #dcfce7; color: #166534; }
+  .inactive-badge { background: #fee2e2; color: #991b1b; }
+
+  .message {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 5px;
+    display: none;
+  }
+  .message.success { display: block; background: #dcfce7; color: #166534; }
+  .message.error { display: block; background: #fee2e2; color: #991b1b; }
+
+  .spinner {
+    display: none;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .modal.open { display: flex; }
+  .modal-content {
+    background: white;
+    width: min(500px, 90%);
+    border-radius: 8px;
+    padding: 22px;
+  }
+  .modal-content h2 { margin-top: 0; }
+
+  .pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+  .pagination span { font-size: 13px; }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .check-row input { width: auto; }
+
+  .test-results {
+    margin-top: 15px;
+    padding: 15px;
+    background: #111827;
+    color: #e5e7eb;
+    border-radius: 6px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    min-height: 100px;
+  }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    .field.full { grid-column: auto; }
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <h1 id="page-title">Automation Test Lab</h1>
+  <p id="page-subtitle">A deliberately testable HTML/CSS/JS application</p>
+</header>
+
+<div class="container">
+
+  <div class="tabs" role="tablist" aria-label="Application sections">
+    <button class="tab active" id="tab-users" data-tab="users-panel">Users</button>
+    <button class="tab" id="tab-form" data-tab="form-panel">User Form</button>
+    <button class="tab" id="tab-test" data-tab="test-panel">Test Utilities</button>
+  </div>
+
+  <!-- USERS -->
+  <section class="panel active" id="users-panel">
+    <div class="toolbar">
+      <input
+        id="user-search"
+        data-testid="user-search"
+        type="search"
+        placeholder="Search users..."
+        aria-label="Search users"
+      />
+      <div>
+        <button class="secondary" id="refresh-users" data-testid="refresh-users">Refresh</button>
+        <button class="primary" id="add-user" data-testid="add-user">Add User</button>
+      </div>
+    </div>
+
+    <table id="users-table" data-testid="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody"></tbody>
+    </table>
+
+    <div class="pagination">
+      <button class="secondary" id="prev-page" data-testid="prev-page">Previous</button>
+      <span id="page-indicator" data-testid="page-indicator">Page 1</span>
+      <button class="secondary" id="next-page" data-testid="next-page">Next</button>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="panel" id="form-panel">
+    <h2 id="form-title">Create User</h2>
+
+    <form id="user-form" data-testid="user-form" novalidate>
+      <input type="hidden" id="user-id" />
+
+      <div class="grid">
+        <div class="field">
+          <label for="name">Name *</label>
+          <input id="name" name="name" data-testid="name-input" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Email *</label>
+          <input id="email" name="email" data-testid="email-input" type="email" required />
+        </div>
+
+        <div class="field">
+          <label for="role">Role *</label>
+          <select id="role" name="role" data-testid="role-select" required>
+            <option value="">Select role</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="QA Engineer">QA Engineer</option>
+            <option value="Developer">Developer</option>
+            <option value="Viewer">Viewer</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="status">Status *</label>
+          <select id="status" name="status" data-testid="status-select">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" data-testid="notes-input"></textarea>
+        </div>
+
+        <div class="field full">
+          <div class="check-row">
+            <input id="terms" type="checkbox" data-testid="terms-checkbox" />
+            <label for="terms">I confirm the information is correct</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="save-user" type="submit" data-testid="save-user">
+          Save User
+          <span class="spinner" id="save-spinner">Saving...</span>
+        </button>
+        <button class="secondary" type="button" id="cancel-form" data-testid="cancel-form">Cancel</button>
+      </div>
+
+      <div id="form-message" class="message" role="alert"></div>
+    </form>
+  </section>
+
+  <!-- TEST UTILITIES -->
+  <section class="panel" id="test-panel">
+    <h2>Automation Test Utilities</h2>
+
+    <div class="actions">
+      <button class="primary" id="success-toast" data-testid="success-toast">Show Success</button>
+      <button class="danger" id="error-toast" data-testid="error-toast">Show Error</button>
+      <button class="secondary" id="async-action" data-testid="async-action">Run Async Action</button>
+      <button class="secondary" id="open-modal" data-testid="open-modal">Open Modal</button>
+    </div>
+
+    <div id="utility-message" class="message" role="alert"></div>
+
+    <div class="test-results" id="async-result" data-testid="async-result">
+No async action executed.
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-content">
+    <h2 id="modal-title">Confirm Action</h2>
+    <p id="modal-text">Are you sure you want to continue?</p>
+    <div class="actions">
+      <button class="primary" id="modal-confirm" data-testid="modal-confirm">Confirm</button>
+      <button class="secondary" id="modal-cancel" data-testid="modal-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const initialUsers = [
+    { id: 1001, name: "Alice Chen", email: "alice@example.com", role: "QA Engineer", status: "Active", notes: "" },
+    { id: 1002, name: "Bob Smith", email: "bob@example.com", role: "Developer", status: "Active", notes: "" },
+    { id: 1003, name: "Carol Wang", email: "carol@example.com", role: "Manager", status: "Inactive", notes: "" },
+    { id: 1004, name: "David Brown", email: "david@example.com", role: "Viewer", status: "Active", notes: "" },
+    { id: 1005, name: "Eva Zhang", email: "eva@example.com", role: "Admin", status: "Active", notes: "" },
+    { id: 1006, name: "Frank Lee", email: "frank@example.com", role: "Developer", status: "Inactive", notes: "" },
+    { id: 1007, name: "Grace Liu", email: "grace@example.com", role: "QA Engineer", status: "Active", notes: "" },
+    { id: 1008, name: "Henry Wilson", email: "henry@example.com", role: "Viewer", status: "Active", notes: "" }
+  ];
+
+  let users = JSON.parse(localStorage.getItem("automation-users")) || initialUsers;
+  let currentPage = 1;
+  const pageSize = 5;
+  let editingId = null;
+
+  const $ = id => document.getElementById(id);
+
+  function saveUsers() {
+    localStorage.setItem("automation-users", JSON.stringify(users));
+  }
+
+  function showMessage(element, text, type) {
+    element.textContent = text;
+    element.className = "message " + type;
+  }
+
+  function renderUsers() {
+    const query = $("user-search").value.trim().toLowerCase();
+    const filtered = users.filter(u =>
+      [u.name, u.email, u.role, u.status].some(v => v.toLowerCase().includes(query))
+    );
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    currentPage = Math.min(currentPage, totalPages);
+
+    const start = (currentPage - 1) * pageSize;
+    const pageUsers = filtered.slice(start, start + pageSize);
+
+    $("users-tbody").innerHTML = pageUsers.map(user => `
+      <tr data-user-id="${user.id}">
+        <td>${user.id}</td>
+        <td data-testid="user-name-${user.id}">${escapeHtml(user.name)}</td>
+        <td data-testid="user-email-${user.id}">${escapeHtml(user.email)}</td>
+        <td>${escapeHtml(user.role)}</td>
+        <td>
+          <span class="badge ${user.status === "Active" ? "active-badge" : "inactive-badge"}"
+                data-testid="user-status-${user.id}">
+            ${user.status}
+          </span>
+        </td>
+        <td>
+          <button class="secondary edit-user"
+                  data-id="${user.id}"
+                  data-testid="edit-user-${user.id}">Edit</button>
+          <button class="danger delete-user"
+                  data-id="${user.id}"
+                  data-testid="delete-user-${user.id}">Delete</button>
+        </td>
+      </tr>
+    `).join("");
+
+    $("page-indicator").textContent = `Page ${currentPage} / ${totalPages}`;
+    $("prev-page").disabled = currentPage === 1;
+    $("next-page").disabled = currentPage === totalPages;
+
+    document.querySelectorAll(".edit-user").forEach(btn => {
+      btn.addEventListener("click", () => openEditForm(Number(btn.dataset.id)));
+    });
+
+    document.querySelectorAll(".delete-user").forEach(btn => {
+      btn.addEventListener("click", () => deleteUser(Number(btn.dataset.id)));
+    });
+  }
+
+  function escapeHtml(value) {
+    return value.replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    }[c]));
+  }
+
+  function switchTab(panelId) {
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.classList.toggle("active", tab.dataset.tab === panelId);
+    });
+    document.querySelectorAll(".panel").forEach(panel => {
+      panel.classList.toggle("active", panel.id === panelId);
+    });
+  }
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+  });
+
+  $("user-search").addEventListener("input", () => {
+    currentPage = 1;
+    renderUsers();
+  });
+
+  $("refresh-users").addEventListener("click", () => {
+    $("user-search").value = "";
+    currentPage = 1;
+    renderUsers();
+  });
+
+  $("prev-page").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderUsers();
+    }
+  });
+
+  $("next-page").addEventListener("click", () => {
+    const totalPages = Math.ceil(users.length / pageSize);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderUsers();
+    }
+  });
+
+  $("add-user").addEventListener("click", () => openCreateForm());
+
+  function openCreateForm() {
+    editingId = null;
+    $("form-title").textContent = "Create User";
+    $("user-form").reset();
+    $("user-id").value = "";
+    $("form-message").className = "message";
+    switchTab("form-panel");
+  }
+
+  function openEditForm(id) {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+
+    editingId = id;
+    $("form-title").textContent = "Edit User";
+    $("user-id").value = user.id;
+    $("name").value = user.name;
+    $("email").value = user.email;
+    $("role").value = user.role;
+    $("status").value = user.status;
+    $("notes").value = user.notes || "";
+    $("terms").checked = false;
+    $("form-message").className = "message";
+    switchTab("form-panel");
+  }
+
+  $("cancel-form").addEventListener("click", () => {
+    $("user-form").reset();
+    switchTab("users-panel");
+  });
+
+  $("user-form").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const name = $("name").value.trim();
+    const email = $("email").value.trim();
+    const role = $("role").value;
+    const terms = $("terms").checked;
+
+    if (!name || !email || !role) {
+      showMessage($("form-message"), "Please complete all required fields.", "error");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      showMessage($("form-message"), "Please enter a valid email address.", "error");
+      return;
+    }
+
+    if (!terms) {
+      showMessage($("form-message"), "Please confirm the information.", "error");
+      return;
+    }
+
+    $("save-user").disabled = true;
+    $("save-spinner").style.display = "inline";
+
+    // Simulates an API request for automation testing.
+    setTimeout(() => {
+      const payload = {
+        name,
+        email,
+        role,
+        status: $("status").value,
+        notes: $("notes").value.trim()
+      };
+
+      if (editingId) {
+        const index = users.findIndex(u => u.id === editingId);
+        users[index] = { ...users[index], ...payload };
+        showMessage($("form-message"), "User updated successfully.", "success");
+      } else {
+        const newUser = {
+          id: Math.max(...users.map(u => u.id), 1000) + 1,
+          ...payload
+        };
+        users.push(newUser);
+        showMessage($("form-message"), "User created successfully.", "success");
+      }
+
+      saveUsers();
+      renderUsers();
+
+      $("save-user").disabled = false;
+      $("save-spinner").style.display = "none";
+
+      setTimeout(() => switchTab("users-panel"), 700);
+    }, 700);
+  });
+
+  function deleteUser(id) {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+
+    $("modal-text").textContent = `Delete user "${user.name}"?`;
+    $("confirm-modal").classList.add("open");
+
+    $("modal-confirm").onclick = () => {
+      users = users.filter(u => u.id !== id);
+      saveUsers();
+      renderUsers();
+      $("confirm-modal").classList.remove("open");
+    };
+
+    $("modal-cancel").onclick = () => {
+      $("confirm-modal").classList.remove("open");
+    };
+  }
+
+  $("open-modal").addEventListener("click", () => {
+    $("modal-text").textContent = "This is a reusable modal for automation testing.";
+    $("confirm-modal").classList.add("open");
+    $("modal-confirm").onclick = () => {
+      $("utility-message").textContent = "Modal confirmed.";
+      $("utility-message").className = "message success";
+      $("confirm-modal").classList.remove("open");
+    };
+    $("modal-cancel").onclick = () => {
+      $("utility-message").textContent = "Modal cancelled.";
+      $("utility-message").className = "message error";
+      $("confirm-modal").classList.remove("open");
+    };
+  });
+
+  $("success-toast").addEventListener("click", () => {
+    showMessage($("utility-message"), "Operation completed successfully.", "success");
+  });
+
+  $("error-toast").addEventListener("click", () => {
+    showMessage($("utility-message"), "Something went wrong.", "error");
+  });
+
+  $("async-action").addEventListener("click", () => {
+    $("async-result").textContent = "Executing async operation...";
+    $("async-action").disabled = true;
+
+    setTimeout(() => {
+      $("async-result").textContent =
+        "Async operation completed.\nstatus=SUCCESS\nrequestId=AUTO-" + Date.now();
+      $("async-action").disabled = false;
+    }, 1500);
+  });
+
+  // Useful deterministic hook for tests.
+  window.testApi = {
+    getUsers: () => [...users],
+    resetUsers: () => {
+      users = [...initialUsers];
+      saveUsers();
+      currentPage = 1;
+      renderUsers();
+    }
+  };
+
+  renderUsers();
+</script>
+</body>
+</html>
