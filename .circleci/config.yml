@@ -6,6 +6,9 @@ jobs:
       - image: cimg/node:26.7.0
     steps:
       - checkout
+      - browser-tools/install-chrome:
+          chrome-version: "118.0.5993.117"
+          replace-existing: true
 
       - run:
           name: Start static server
@@ -38,7 +41,7 @@ jobs:
               --tunnel \
               --tunnel-port 3000 \
               --branch "master"
-              --override-chrome-version "131"
+
 workflows:
   version: 2
   test:
