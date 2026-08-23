@@ -8,7 +8,12 @@ jobs:
       - checkout
       - run:
           name: Install Vercel CLI
-          command: npm install --global vercel@latest
+          command: |
+          mkdir ~/.npm-global
+          npm config set prefix '~/.npm-global'
+          export PATH=~/.npm-global/bin:$PATH
+          source ~/.bashrc
+          npm install --global vercel@latest
       - run:
           name: Deploy app/ to Vercel and capture the URL
           command: |
@@ -36,7 +41,7 @@ jobs:
       - run:
           name: Run Testim suite against the deployed URL
           command: |
-            DEPLOY_URL=$(cat deploy_url.txt)
+            DEPLOY_URL=$(cat deploy_url.txt）
             echo "Testing against: $DEPLOY_URL"
             mkdir -p test-results
             # --base-url
