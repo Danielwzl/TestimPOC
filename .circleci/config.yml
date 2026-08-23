@@ -14,6 +14,12 @@ jobs:
             echo "Checking HTML..."
             test -f app/page.html
             echo "HTML file found!"
+      - run:
+          name: Start Web Server
+          command: |
+            cd app
+            python3 -m http.server 8080 -directory ./app
+          background: true
 
 workflows:
   test:
