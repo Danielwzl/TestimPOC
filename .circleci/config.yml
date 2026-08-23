@@ -1,18 +1,20 @@
 version: 2.1
+
 jobs:
   test:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:22.0
 
     steps:
       - checkout
 
       - run:
-          name: Check HTML file
+          name: Check HTML
           command: |
-            echo "Checking website..."
+            echo "Checking HTML..."
             test -f app/page.html
-            echo "page.html exists!"
+            echo "HTML file found!"
+
 workflows:
   test:
     jobs:
