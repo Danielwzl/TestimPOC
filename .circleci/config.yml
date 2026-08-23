@@ -34,9 +34,10 @@ jobs:
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
               --base-url "http://localhost:3000" \
+               --grid "Testim-Grid" \
+              --tunnel \
+              --tunnel-port 3000 \
               --branch "master"
-              --grid "$TESTIM_GRID"
-
 workflows:
   version: 2
   test:
