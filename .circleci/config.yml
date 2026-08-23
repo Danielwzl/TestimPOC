@@ -34,7 +34,7 @@ jobs:
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
               --base-url "http://localhost:3000" \
-               --grid "Testim-Grid" \
+              --grid "$TESTIM_GRID"
               --tunnel \
               --tunnel-port 3000 \
               --branch "master"
