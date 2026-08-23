@@ -6,10 +6,6 @@ jobs:
       - image: cimg/node:26.7.0
     steps:
       - checkout
-      - browser-tools/install-chrome:
-          chrome-version: "118.0.5993.117"
-          replace-existing: true
-
       - run:
           name: Start static server
           background: true
