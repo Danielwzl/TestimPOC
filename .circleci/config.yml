@@ -38,6 +38,7 @@ jobs:
               --tunnel \
               --tunnel-port 3000 \
               --branch "master"
+              --override-chrome-version "131"
 workflows:
   version: 2
   test:
