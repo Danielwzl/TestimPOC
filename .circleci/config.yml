@@ -1,27 +1,60 @@
 version: 2.1
 
 jobs:
-  test:
+  deploy-to-vercel:
     docker:
-      - image: cimg/node:22.0
-
+      - image: cimg/node:20.11
     steps:
       - checkout
+      - run:
+          name: Install Vercel CLI
+          command: npm install --global vercel@latest
+      - run:
+          name: Deploy app/ to Vercel and capture the URL
+          command: |
+            # vercel deploy
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              vercel deploy --cwd app --prod --yes > deploy_url.txt
+            else
+              vercel deploy --cwd app --yes > deploy_url.txt
+            fi
+            echo "Deployed to: $(cat deploy_url.txt)"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - deploy_url.txt
 
+  run-testim-tests:
+    docker:
+      - image: cimg/node:20.11
+    steps:
+      - attach_workspace:
+          at: .
       - run:
-          name: Check HTML
-          command: |
-            echo "Checking HTML..."
-            test -f app/page.html
-            echo "HTML file found!"
+          name: Install Testim CLI
+          command: npm install --global @testim/testim-cli
       - run:
-          name: Start Web Server
+          name: Run Testim suite against the deployed URL
           command: |
-            cd app
-            python3 -m http.server 8080 -directory ./app
-          background: true
+            DEPLOY_URL=$(cat deploy_url.txt)
+            echo "Testing against: $DEPLOY_URL"
+            mkdir -p test-results
+            # --base-url
+            testim \
+              --token "$TESTIM_TOKEN" \
+              --project "$TESTIM_PROJECT_ID" \
+              --grid "$TESTIM_GRID" \
+              --base-url "$DEPLOY_URL" \
+              --report-file test-results/testim-report.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
 
 workflows:
-  test:
+  build-deploy-test:
     jobs:
-      - test
+      - deploy-to-vercel
+      - run-testim-tests:
+          requires:
+            - deploy-to-vercel
