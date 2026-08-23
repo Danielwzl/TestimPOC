@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   deploy-to-vercel:
     docker:
-      - image: cimg/node:20.11
+      - image: cimg/node:22.12.0
     steps:
       - checkout
       - run:
@@ -26,7 +26,7 @@ jobs:
 
   run-testim-tests:
     docker:
-      - image: cimg/node:20.11
+      - image: cimg/node:22.12.0
     steps:
       - attach_workspace:
           at: .
