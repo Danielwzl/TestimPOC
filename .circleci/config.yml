@@ -1,65 +1,44 @@
 version: 2.1
 
 jobs:
-  deploy-to-vercel:
+  test:
     docker:
-      - image: cimg/node:22.12.0
+      - image: cimg/node:20.11.0
     steps:
       - checkout
-      - run:
-          name: Install Vercel CLI
-          command: |
-          mkdir ~/.npm-global
-          npm config set prefix '~/.npm-global'
-          export PATH=~/.npm-global/bin:$PATH
-          source ~/.bashrc
-          npm install --global vercel@latest
-      - run:
-          name: Deploy app/ to Vercel and capture the URL
-          command: |
-            # vercel deploy
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
-              vercel deploy --cwd app --prod --yes > deploy_url.txt
-            else
-              vercel deploy --cwd app --yes > deploy_url.txt
-            fi
-            echo "Deployed to: $(cat deploy_url.txt)"
-      - persist_to_workspace:
-          root: .
-          paths:
-            - deploy_url.txt
 
-  run-testim-tests:
-    docker:
-      - image: cimg/node:22.12.0
-    steps:
-      - attach_workspace:
-          at: .
       - run:
-          name: Install Testim CLI
-          command: npm install --global @testim/testim-cli
-      - run:
-          name: Run Testim suite against the deployed URL
+          name: Start static server
+          background: true
           command: |
-            DEPLOY_URL=$(cat deploy_url.txt）
-            echo "Testing against: $DEPLOY_URL"
-            mkdir -p test-results
-            # --base-url
-            testim \
+            npx --yes serve app -l 3000
+
+      - run:
+          name: Wait for server
+          command: |
+            for i in {1..30}; do
+              if curl -s http://localhost:3000 >/dev/null; then
+                echo "Server is up!"
+                exit 0
+              fi
+              sleep 1
+            done
+            echo "Server failed to start" >&2
+            exit 1
+
+      - run:
+          name: Run Testim tests locally
+          no_output_timeout: 30m
+          command: |
+            npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --grid "$TESTIM_GRID" \
-              --base-url "$DEPLOY_URL" \
-              --report-file test-results/testim-report.xml
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
+              --base-url "http://localhost:3000" \
+              --suite "$TESTIM_SUITE" \
+              --grid "$TESTIM_GRID"
 
 workflows:
-  build-deploy-test:
+  version: 2
+  test:
     jobs:
-      - deploy-to-vercel
-      - run-testim-tests:
-          requires:
-            - deploy-to-vercel
+      - test
