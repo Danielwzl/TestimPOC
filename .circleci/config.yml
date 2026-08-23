@@ -34,8 +34,7 @@ jobs:
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
               --base-url "http://localhost:3000" \
-              --suite "$TESTIM_SUITE" \
-              --grid "$TESTIM_GRID"
+              --branch "master"
 
 workflows:
   version: 2
