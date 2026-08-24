@@ -6,7 +6,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: testimio/docker-cli
+      - image: cimg/node:26.7.0
     steps:
       - checkout
       # - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
@@ -27,19 +27,10 @@ jobs:
       #       chromedriver --version
 
       - run:
-          name: Dynamically Install Node.js Version 26
-          command: |
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
-            \. "$HOME/.nvm/nvm.sh"
-            nvm install 26
-            node -v
-            npm -v
-
-      - run:
           name: Run Testim tests locally
           no_output_timeout: 30m
           command: |
-              testim
+            npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
               --base-url "https://testim-poc.vercel.app/app" \
