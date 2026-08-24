@@ -7,7 +7,7 @@ jobs:
       - image: testimio/docker-cli
     steps:
       - checkout
-      - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
+      # - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
       - run:
           name: Run Testim tests locally
           no_output_timeout: 30m
@@ -17,10 +17,7 @@ jobs:
               --project "$TESTIM_PROJECT_ID" \
               --base-url "https://testim-poc.vercel.app/app" \
               --grid "$TESTIM_GRID" \
-              --branch "master" \
-              --report-file $CIRCLE_TEST_REPORTS/testim/results.xml \
-              - store_artifacts: path: /tmp/circleci-test-results \
-              - store_test_results: path: /tmp/circleci-test-results
+              --branch "master"
 workflows:
   version: 2
   test:
