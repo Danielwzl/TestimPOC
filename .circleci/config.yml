@@ -14,11 +14,11 @@ jobs:
 
       - browser-tools/install_browser_tools
       # Install Google Chrome (Required for ChromeDriver)
-      - browser-tools/install-chrome:
+      - browser-tools/install_chrome:
           timeout: 5m
       
       # Install ChromeDriver
-      - browser-tools/install-chromedriver:
+      - browser-tools/install_chromedriver:
           timeout: 5m
 
       - run:
