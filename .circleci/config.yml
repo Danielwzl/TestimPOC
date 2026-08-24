@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  # Declare the official CircleCI browser tools orb
   browser-tools: circleci/browser-tools@2.4.2
 
 jobs:
@@ -13,11 +12,14 @@ jobs:
       - checkout
       # - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
 
+      - browser-tools/install_browser_tools
       # Install Google Chrome (Required for ChromeDriver)
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
+          timeout: 5m
       
       # Install ChromeDriver
-      - browser-tools/install-chromedriver
+      - browser-tools/install-chromedriver:
+          timeout: 5m
 
       - run:
           name: Check Browser and Driver Versions
