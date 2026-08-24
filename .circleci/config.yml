@@ -6,7 +6,6 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/node:26.7.0-browsers
       - image: testimio/docker-cli
     steps:
       - checkout
