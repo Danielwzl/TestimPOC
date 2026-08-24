@@ -7,36 +7,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Start static server
-          background: true
-          command: |
-            npx --yes serve app -l 3000
-
-      - run:
-          name: Wait for server
-          command: |
-            for i in {1..30}; do
-              if curl -s http://localhost:3000 >/dev/null; then
-                echo "Server is up!"
-                exit 0
-              fi
-              sleep 1
-            done
-            echo "Server failed to start" >&2
-            exit 1
-
-      - run:
           name: Run Testim tests locally
           no_output_timeout: 30m
           command: |
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "http://localhost:3000" \
+              --base-url "https://vercel.app" \
               --grid "$TESTIM_GRID"
-              --tunnel \
-              --tunnel-port 3000 \
               --branch "master"
+              --report-file $CIRCLE_TEST_REPORTS/testim/results.xml
 
 workflows:
   version: 2
