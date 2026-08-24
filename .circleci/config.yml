@@ -27,12 +27,11 @@ jobs:
       #       chromedriver --version
 
       - run:
-          name: Dynamically Install Node.js Version 24
+          name: Dynamically Install Node.js Version 26
           command: |
-            docker pull node:24-slim
-            docker run -it --rm --entrypoint sh node:24-slim
-            node -v # Should print "v24.19.0".
-            npm -v # Should print "11.17.0".
+            RUN apk update && apk add nodejs npm
+            node --version
+            npm --version
 
       - run:
           name: Run Testim tests locally
