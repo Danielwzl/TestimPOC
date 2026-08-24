@@ -7,8 +7,39 @@ jobs:
   test:
     docker:
       - image: cimg/node:lts-browsers
+    environment:
+      VERCEL_ORG_ID: $VERCEL_ORG_ID
+      VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
     steps:
       - checkout
+
+      - run:
+          name: Install Vercel CLI
+          command: npm install --global vercel@latest
+      - run:
+          name: Pull Vercel Environment Information
+          command: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+      - run:
+          name: Build Project Artifacts
+          command: vercel build --token=$VERCEL_TOKEN
+      - run:
+          name: Deploy Project Artifacts to Vercel
+          command: vercel deploy --prebuilt --token=$VERCEL_TOKEN
+
+      # 1. Deploy and capture the URL into BASH_ENV
+      - run:
+          name: Deploy to Vercel & Capture URL
+          command: |
+            DEPLOYED_URL=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --yes)
+            FINAL_URL="${RAW_URL}/app"
+            echo "Vercel deployment URL is: $DEPLOYED_URL"
+            echo "export VERCEL_DEPLOYED_URL=\"$FINAL_URL\"" >> $BASH_ENV
+
+      # 2. Use the variable in any following steps
+      - run:
+          name: Verify and Use Captured Domain
+          command: |
+            echo "The assigned domain available in this step is: $FINAL_URL"
 
       - browser-tools/install_chrome:
           replace_existing: true
@@ -29,12 +60,20 @@ jobs:
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "https://testim-poc.vercel.app/app" \
+              --base-url "$FINAL_URL" \
               --user "Hx4tCRd3BORgYfxVE8Es" \
               --use-local-chrome-driver \
               --mode selenium \
               --headless \
               --branch "master"
+
+      - run:
+          name: Destroy Vercel Instance
+          command: |
+            echo "Removing Vercel instance at: $DEPLOYED_URL"
+            # Using -y bypasses the interactive CLI prompt confirmation
+            vercel remove $DEPLOYED_URL --token=$VERCEL_TOKEN -y
+          when: always # Forces this step to execute even if preceding tests fail
 
 workflows:
   version: 2
