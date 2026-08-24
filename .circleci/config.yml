@@ -11,7 +11,7 @@ jobs:
       - checkout
       # - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
 
-      - browser-tools/install_browser_tools
+      # - browser-tools/install_browser_tools
       # Install Google Chrome (Required for ChromeDriver)
       - browser-tools/install_chrome:
           timeout: 5m
