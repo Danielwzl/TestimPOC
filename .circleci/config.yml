@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: cimg/node:26.7.0
+      - image: cimg/node:26.7.0-browsers
       - image: testimio/docker-cli
     steps:
       - checkout
@@ -17,6 +17,7 @@ jobs:
               --project "$TESTIM_PROJECT_ID" \
               --base-url "https://testim-poc.vercel.app/app" \
               --grid "" \
+              --mode selenium \
               --use-local-chrome-driver \
               --branch "master"
 workflows:
