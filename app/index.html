@@ -421,19 +421,19 @@ No async action executed.
 
   $("user-search").addEventListener("input", () => {
     currentPage = 1;
-    renderUsers();
+    //renderUsers();
   });
 
   $("refresh-users").addEventListener("click", () => {
     $("user-search").value = "";
     currentPage = 1;
-    renderUsers();
+    //renderUsers();
   });
 
   $("prev-page").addEventListener("click", () => {
     if (currentPage > 1) {
       currentPage--;
-      renderUsers();
+      //renderUsers();
     }
   });
 
@@ -441,7 +441,7 @@ No async action executed.
     const totalPages = Math.ceil(users.length / pageSize);
     if (currentPage < totalPages) {
       currentPage++;
-      renderUsers();
+      //renderUsers();
     }
   });
 
@@ -528,7 +528,7 @@ No async action executed.
       }
 
       saveUsers();
-      renderUsers();
+      //renderUsers();
 
       $("save-user").disabled = false;
       $("save-spinner").style.display = "none";
@@ -547,7 +547,7 @@ No async action executed.
     $("modal-confirm").onclick = () => {
       users = users.filter(u => u.id !== id);
       saveUsers();
-      renderUsers();
+      //renderUsers();
       $("confirm-modal").classList.remove("open");
     };
 
@@ -597,11 +597,11 @@ No async action executed.
       users = [...initialUsers];
       saveUsers();
       currentPage = 1;
-      renderUsers();
+      //renderUsers();
     }
   };
 
-  //renderUsers();
+  ////renderUsers();
 </script>
 </body>
 </html>
