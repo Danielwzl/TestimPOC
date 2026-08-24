@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs:
+  # Declare the official CircleCI browser tools orb
+  browser-tools: circleci/browser-tools@2.4.2
+
 jobs:
   test:
     docker:
@@ -8,6 +12,19 @@ jobs:
     steps:
       - checkout
       # - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
+
+      # Install Google Chrome (Required for ChromeDriver)
+      - browser-tools/install-chrome
+      
+      # Install ChromeDriver
+      - browser-tools/install-chromedriver
+
+      - run:
+          name: Check Browser and Driver Versions
+          command: |
+            google-chrome --version
+            chromedriver --version
+
       - run:
           name: Run Testim tests locally
           no_output_timeout: 30m
@@ -16,9 +33,8 @@ jobs:
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
               --base-url "https://testim-poc.vercel.app/app" \
-              --grid "" \
-              --mode selenium \
-              --headless \
+              --user "Hx4tCRd3BORgYfxVE8Es" \
+              --mode "selenium" \
               --use-local-chrome-driver \
               --branch "master"
 workflows:
