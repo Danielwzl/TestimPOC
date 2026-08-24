@@ -7,7 +7,7 @@ jobs:
       - image: testimio/docker-cli
     steps:
       - checkout
-      run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
+      - run: mkdir -p $CIRCLE_TEST_REPORTS/testim/
       - run:
           name: Run Testim tests locally
           no_output_timeout: 30m
