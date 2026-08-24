@@ -18,7 +18,6 @@ jobs:
               --base-url "https://testim-poc.vercel.app/app" \
               --grid "" \
               --mode selenium \
-              --chrome-extra-args "--no-sandbox,--disable-dev-shm-usage,--disable-gpu" \
               --headless \
               --use-local-chrome-driver \
               --branch "master"
