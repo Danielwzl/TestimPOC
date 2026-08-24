@@ -16,7 +16,8 @@ jobs:
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
               --base-url "https://testim-poc.vercel.app/app" \
-              --grid "$TESTIM_GRID" \
+              --grid "" \
+              --use-local-chrome-driver \
               --branch "master"
 workflows:
   version: 2
