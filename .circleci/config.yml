@@ -20,11 +20,11 @@ jobs:
       # - browser-tools/install_chromedriver:
       #     timeout: 5m
 
-      - run:
-          name: Check Browser and Driver Versions
-          command: |
-            google-chrome --version
-            chromedriver --version
+      # - run:
+      #     name: Check Browser and Driver Versions
+      #     command: |
+      #       google-chrome --version
+      #       chromedriver --version
 
       - run:
           name: Run Testim tests locally
