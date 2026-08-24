@@ -29,9 +29,11 @@ jobs:
       - run:
           name: Dynamically Install Node.js Version 26
           command: |
-            apk update && apk add --no-cache nodejs npm
-            node --version
-            npm --version
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
+            \. "$HOME/.nvm/nvm.sh"
+            nvm install 26
+            node -v
+            npm -v
 
       - run:
           name: Run Testim tests locally
