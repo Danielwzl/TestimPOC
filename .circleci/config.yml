@@ -27,11 +27,12 @@ jobs:
       #       chromedriver --version
 
       - run:
-          name: Dynamically Install Node.js Version 26
+          name: Dynamically Install Node.js Version 24
           command: |
-            apk add --no-cache --repository=https://alpinelinux.org nodejs-current npm
-            node --version
-            npm --version
+            docker pull node:24-slim
+            docker run -it --rm --entrypoint sh node:24-slim
+            node -v # Should print "v24.19.0".
+            npm -v # Should print "11.17.0".
 
       - run:
           name: Run Testim tests locally
