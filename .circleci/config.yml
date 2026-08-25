@@ -7,8 +7,32 @@ jobs:
   test:
     docker:
       - image: cimg/node:lts-browsers
+    environment:
+      VERCEL_ORG_ID: X3gMrRHK7upMCDAtTAdtSDnT
+      VERCEL_PROJECT_ID: prj_cLK4Ybszu2P7hooF0qafqVI7W8Rj
     steps:
       - checkout
+
+      - run:
+          name: Install Vercel CLI
+          command: sudo npm install --global vercel@latest
+
+      - run:
+          name: Deploy Vercel preview instance and capture domain
+          command: |
+            vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
+            vercel build --token="$VERCEL_TOKEN"
+
+            DEPLOYED_URL=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
+            FINAL_URL="${DEPLOYED_URL%/}/app?x-vercel-protection-bypass=${TOKEN_BYPASS_TESTIM}"
+
+            echo "Vercel deployment URL: $DEPLOYED_URL"
+            echo "Test base URL:         $FINAL_URL"
+
+            echo "export DEPLOYED_URL=\"$DEPLOYED_URL\"" >> "$BASH_ENV"
+            echo "export FINAL_URL=\"$FINAL_URL\"" >> "$BASH_ENV"
+            echo "$DEPLOYED_URL" > /tmp/deployed_url.txt
+            echo "$FINAL_URL" > /tmp/final_url.txt
 
       - browser-tools/install_chrome:
           replace_existing: true
@@ -26,15 +50,32 @@ jobs:
           name: Run Testim tests with local Chrome
           no_output_timeout: 30m
           command: |
+            FINAL_URL="${FINAL_URL:-$(cat /tmp/final_url.txt)}"
+            DEPLOYED_URL="${DEPLOYED_URL:-$(cat /tmp/deployed_url.txt)}"
+
+            if [ -z "$FINAL_URL" ]; then
+              echo "ERROR: FINAL_URL is empty — deploy step may have failed"
+              exit 1
+            fi
+            echo "Running Testim against: $FINAL_URL"
+
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "https://testim-poc.vercel.app/app" \
+              --base-url "$FINAL_URL" \
               --user "Hx4tCRd3BORgYfxVE8Es" \
               --use-local-chrome-driver \
               --mode selenium \
               --headless \
               --branch "master"
+
+      - run:
+          name: Destroy Vercel Instance
+          command: |
+            DEPLOYED_URL="${DEPLOYED_URL:-$(cat /tmp/deployed_url.txt)}"
+            echo "Removing Vercel deployment: $DEPLOYED_URL"
+            vercel remove "$DEPLOYED_URL" --token="$VERCEL_TOKEN" --yes
+          when: always
 
 workflows:
   version: 2
