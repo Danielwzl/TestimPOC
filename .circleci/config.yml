@@ -30,7 +30,7 @@ jobs:
       - run:
           name: Deploy to Vercel & Capture URL
           command: |
-            DEPLOYED_URL=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --yes)
+            DEPLOYED_URL=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --yes)
             FINAL_URL="${RAW_URL}/app"
             echo "Vercel deployment URL is: $DEPLOYED_URL"
             echo "export VERCEL_DEPLOYED_URL=\"$FINAL_URL\"" >> $BASH_ENV
