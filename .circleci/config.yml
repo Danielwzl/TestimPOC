@@ -27,8 +27,8 @@ jobs:
             echo "Vercel deployment URL: $DEPLOYED_URL"
             echo "Test base URL:         $FINAL_URL"
 
-            echo "export DEPLOYED_URL=\"$DEPLOYED_URL\"" >> "$BASH_ENV"
-            echo "export FINAL_URL=\"$FINAL_URL\"" >> "$BASH_ENV"
+            echo "DEPLOYED_URL=\"$DEPLOYED_URL\"" >> "$BASH_ENV"
+            echo "FINAL_URL=\"$FINAL_URL\"" >> "$BASH_ENV"
             echo "$DEPLOYED_URL" > /tmp/deployed_url.txt
             echo "$FINAL_URL" > /tmp/final_url.txt
 
