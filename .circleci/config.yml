@@ -62,7 +62,7 @@ jobs:
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "$FINAL_URL" \
+              --base-url "https://testim-oc4wzmtmh-danielwzls-projects.vercel.app/app" \
               --user "Hx4tCRd3BORgYfxVE8Es" \
               --use-local-chrome-driver \
               --mode selenium \
