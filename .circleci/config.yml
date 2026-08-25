@@ -8,8 +8,8 @@ jobs:
     docker:
       - image: cimg/node:lts-browsers
     environment:
-      VERCEL_ORG_ID: $VERCEL_ORG_ID
-      VERCEL_PROJECT_ID: $VERCEL_PROJECT_ID
+      VERCEL_ORG_ID: X3gMrRHK7upMCDAtTAdtSDnT
+      VERCEL_PROJECT_ID: prj_cLK4Ybszu2P7hooF0qafqVI7W8Rj
     steps:
       - checkout
 
