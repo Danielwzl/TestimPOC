@@ -24,7 +24,7 @@ jobs:
             vercel build --token="$VERCEL_TOKEN"
 
             DEPLOYED_URL=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
-            FINAL_URL="${DEPLOYED_URL%/}/app"
+            FINAL_URL="${DEPLOYED_URL%/}/app?x-vercel-protection-bypass=${TOKEN_BYPASS_TESTIM}"
 
             echo "Vercel deployment URL: $DEPLOYED_URL"
             echo "Test base URL:         $FINAL_URL"
