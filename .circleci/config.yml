@@ -62,20 +62,20 @@ jobs:
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "https://testim-poc.vercel.app/app" \
+              --base-url "$FINAL_URL" \
               --user "Hx4tCRd3BORgYfxVE8Es" \
               --use-local-chrome-driver \
               --mode selenium \
               --headless \
               --branch "master"
 
-      # - run:
-      #     name: Destroy Vercel Instance
-      #     command: |
-      #       DEPLOYED_URL="${DEPLOYED_URL:-$(cat /tmp/deployed_url.txt)}"
-      #       echo "Removing Vercel deployment: $DEPLOYED_URL"
-      #       vercel remove "$DEPLOYED_URL" --token="$VERCEL_TOKEN" --yes
-      #     when: always
+      - run:
+          name: Destroy Vercel Instance
+          command: |
+            DEPLOYED_URL="${DEPLOYED_URL:-$(cat /tmp/deployed_url.txt)}"
+            echo "Removing Vercel deployment: $DEPLOYED_URL"
+            vercel remove "$DEPLOYED_URL" --token="$VERCEL_TOKEN" --yes
+          when: always
 
 workflows:
   version: 2
