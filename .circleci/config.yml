@@ -31,7 +31,7 @@ jobs:
           name: Deploy to Vercel & Capture URL
           command: |
             DEPLOYED_URL=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --yes)
-            FINAL_URL="${RAW_URL}/app"
+            FINAL_URL="${DEPLOYED_URL%/}/app"
             echo "Vercel deployment URL is: $DEPLOYED_URL"
             echo "export VERCEL_DEPLOYED_URL=\"$FINAL_URL\"" >> $BASH_ENV
 
@@ -60,7 +60,7 @@ jobs:
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "google.ca" \
+              --base-url "$FINAL_URL" \
               --user "Hx4tCRd3BORgYfxVE8Es" \
               --use-local-chrome-driver \
               --mode selenium \
