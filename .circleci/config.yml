@@ -29,8 +29,7 @@ jobs:
 
             echo "DEPLOYED_URL=\"$DEPLOYED_URL\"" >> "$BASH_ENV"
             echo "FINAL_URL=\"$FINAL_URL\"" >> "$BASH_ENV"
-            echo "$DEPLOYED_URL" > /tmp/deployed_url.txt
-            echo "$FINAL_URL" > /tmp/final_url.txt
+
 
       - browser-tools/install_chrome:
           replace_existing: true
@@ -41,6 +40,7 @@ jobs:
       - run:
           name: Check Browser and Driver Versions
           command: |
+            echo "Oh boy: $FINAL_URL"
             google-chrome --version
             chromedriver --version
 
