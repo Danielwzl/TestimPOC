@@ -15,7 +15,7 @@ jobs:
 
       - run:
           name: Install Vercel CLI
-          command: npm install --global vercel@latest
+          command: sudo npm install --global vercel@latest
 
       - run:
           name: Deploy Vercel preview instance and capture domain
@@ -23,14 +23,12 @@ jobs:
             vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
             vercel build --token="$VERCEL_TOKEN"
 
-            # 创建 preview deployment，stdout 即为 deployment URL
             DEPLOYED_URL=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
             FINAL_URL="${DEPLOYED_URL%/}/app"
 
             echo "Vercel deployment URL: $DEPLOYED_URL"
             echo "Test base URL:         $FINAL_URL"
 
-            # 传给后续 step：BASH_ENV + 文件双保险
             echo "export DEPLOYED_URL=\"$DEPLOYED_URL\"" >> "$BASH_ENV"
             echo "export FINAL_URL=\"$FINAL_URL\"" >> "$BASH_ENV"
             echo "$DEPLOYED_URL" > /tmp/deployed_url.txt
