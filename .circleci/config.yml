@@ -60,7 +60,7 @@ jobs:
             npx --yes @testim/testim-cli \
               --token "$TESTIM_TOKEN" \
               --project "$TESTIM_PROJECT_ID" \
-              --base-url "$FINAL_URL" \
+              --base-url "google.ca" \
               --user "Hx4tCRd3BORgYfxVE8Es" \
               --use-local-chrome-driver \
               --mode selenium \
